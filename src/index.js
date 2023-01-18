@@ -7,16 +7,20 @@ const DEBOUNCE_DELAY = 300;
 
 const input = document.querySelector('#search-box');
 const list = document.querySelector('.country-list');
+const info = document.querySelector('.country-info');
 list.style.padding = '0';
 
-const info = document.querySelector('.country-info');
+input.addEventListener('input', debounce(seachCountry, DEBOUNCE_DELAY));
 
 function clearData(output) {
   output.innerHTML = '';
 }
 
 function seachCountry(evt) {
-  const name = input.value.trim();
+  const name = evt.target.value.trim();
+  if (name === '') {
+    return;
+  }
 
   fetchCountries(name)
     .then(data => {
@@ -25,6 +29,13 @@ function seachCountry(evt) {
     .catch(error => {
       if (name !== '') {
         Notiflix.Notify.failure('Oops, there is no country with that name');
+        clearData(list);
+        clearData(info);
+      }
+      if (name === '') {
+        Notiflix.Notify.failure('Oops, there is no country with that name');
+        clearData(list);
+        clearData(info);
       }
     });
   evt.preventDefault();
@@ -80,5 +91,3 @@ function createMarkup(array) {
     list.insertAdjacentHTML('beforeend', createListMarkupEnd);
   }
 }
-
-input.addEventListener('input', debounce(seachCountry, DEBOUNCE_DELAY));
